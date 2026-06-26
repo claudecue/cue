@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Node (none committed, but guard against accidental local installs)
+node_modules/
+npm-debug.log*
+
+# Cue runtime state is in ~/.cue or $XDG_STATE_HOME, never in the repo —
+# but ignore a local copy if anyone points it here for testing.
+.cue/
