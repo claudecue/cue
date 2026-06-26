@@ -1,7 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, writeFileSync, chmodSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-import { buildCommand } from '../lib/notify.mjs';
+import { buildCommand, findBinary } from '../lib/notify.mjs';
 
 const base = {
   title: 'redactr-proxy',
@@ -119,4 +122,30 @@ test('Windows: single quotes in identity are escaped for PowerShell', () => {
 
 test('unknown platform returns null', () => {
   assert.equal(buildCommand({ platform: 'aix', ...base }), null);
+});
+
+// findBinary must locate a notifier even when it lives in a dir that is NOT on
+// the (often minimal) non-interactive hook PATH — e.g. Homebrew's bin.
+test('findBinary: finds a binary via an extra dir not on PATH', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'cue-bin-'));
+  const bin = join(dir, 'terminal-notifier');
+  writeFileSync(bin, '#!/bin/sh\n');
+  chmodSync(bin, 0o755);
+  // PATH deliberately empty; the binary is only discoverable via extraDirs.
+  const found = findBinary('terminal-notifier', { env: { PATH: '' }, extraDirs: [dir] });
+  assert.equal(found, bin);
+  rmSync(dir, { recursive: true, force: true });
+});
+
+test('findBinary: finds a binary on PATH', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'cue-bin-'));
+  const bin = join(dir, 'mybin');
+  writeFileSync(bin, '');
+  const found = findBinary('mybin', { env: { PATH: dir }, extraDirs: [] });
+  assert.equal(found, bin);
+  rmSync(dir, { recursive: true, force: true });
+});
+
+test('findBinary: returns null when nowhere to be found', () => {
+  assert.equal(findBinary('definitely-not-a-real-binary-xyz', { env: { PATH: '' }, extraDirs: [] }), null);
 });

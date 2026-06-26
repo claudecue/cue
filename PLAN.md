@@ -58,6 +58,16 @@ Checked against https://code.claude.com/docs/en/hooks, `.../hooks-guide`,
   idles yield exactly one sound. Covered by a real multi-process regression test.
 - **Mode enum / default set:** corrected to six values; default `autoModes` now
   `["bypassPermissions", "auto", "dontAsk"]`. Gating test exercises the full enum.
+- **Distribution hardening (for other users):** notifier discovery is now PATH-
+  independent (`findBinary` checks `/opt/homebrew/bin`, `/usr/local/bin` directly), since
+  hooks run in a non-interactive shell whose PATH often omits Homebrew/nvm — otherwise a
+  user who installed `terminal-notifier` would still get the osascript fallback. The
+  `node`-on-PATH requirement (the hook runs `node`) is documented prominently in the
+  README, including the symptom (silent no-op) and fix, because Claude Code's docs don't
+  guarantee `node` on a hook's PATH. README now has a full install/permissions/verify
+  walkthrough: hooks auto-activate on install (no settings.json editing), enabled by
+  default, `/reload-plugins` (no restart), and the OS notification grant is the only
+  manual permission.
 - **Click-to-focus:** deliberately **not** shipped. Held to a "100% smooth for every
   user" bar, no click path qualifies (osascript has no click handler; `notify-send`
   callbacks need a long-lived process; exact tab/pane focus is emulator-specific). Added

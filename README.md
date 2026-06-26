@@ -48,33 +48,82 @@ that's also where you'll find `config.json`.
 
 ## Install
 
-### From the marketplace (recommended)
+### 1. Prerequisites
+
+- **`node` on your PATH.** Cue's hooks run `node`. Verify with `node --version`. This is
+  the one easy-to-miss requirement — see the [PATH note](#a-note-on-path) below if Cue
+  installs but never fires.
+- **A notifier for your OS** (optional but recommended for the best experience):
+  - **macOS:** `brew install terminal-notifier` (clean, grouped notifications). Without
+    it, Cue falls back to built-in `osascript` — notifications still work but appear under
+    "Script Editor".
+  - **Linux:** `notify-send` — `sudo apt install libnotify-bin` (or your distro's package).
+  - **Windows:** `Install-Module BurntToast` (else a raw WinRT toast is used).
+
+Zero npm dependencies — nothing to `npm install`.
+
+### 2. Add the marketplace and install
+
+Inside Claude Code:
 
 ```text
 /plugin marketplace add wikispecadmin-ai/cue
 /plugin install cue@cue-marketplace
+/reload-plugins
 ```
 
-> Replace `wikispecadmin-ai/cue` with wherever you host this repo. This plugin's
-> marketplace uses a relative `source: "./"`, which only resolves when the marketplace is
-> added **via the git repo** (GitHub/GitLab/git URL), as shown above — **not** via a
-> direct URL to a raw `marketplace.json` file (a raw-URL add downloads only the manifest,
-> not the plugin files).
+That's it — the hooks ship inside the plugin and **activate automatically** (no editing
+`settings.json`). The plugin installs **enabled by default**, to your user scope, and no
+restart is needed (`/reload-plugins` applies it live). Disable/re-enable later with
+`/plugin disable cue@cue-marketplace` / `/plugin enable cue@cue-marketplace`.
 
-### Local / development
+> Replace `wikispecadmin-ai/cue` with wherever the repo is hosted. The marketplace uses a
+> relative `source: "./"`, which only resolves when added **via the git repo**
+> (GitHub/GitLab/git URL) — **not** via a direct URL to a raw `marketplace.json`.
+
+CLI equivalent (outside a session): `claude plugin marketplace add wikispecadmin-ai/cue`
+then `claude plugin install cue@cue-marketplace`.
+
+### 3. Grant the OS notification permission (first run)
+
+The **first** time Cue posts a notification, your OS asks whether to allow it. On macOS
+this prompt is for **terminal-notifier** (or "Script Editor" on the fallback) — click
+**Allow**, and make sure Focus / Do Not Disturb is off. You can revisit this under System
+Settings → Notifications. Cue can't grant this for you; it's an OS-level permission.
+
+### 4. Confirm it works
+
+1. In a session, run `/hooks` and check that Cue's `Notification` and `Stop` entries appear.
+2. Start (or switch to) an **unattended mode**: `claude --permission-mode bypassPermissions`,
+   or press `Shift+Tab` / use `--permission-mode auto`.
+3. Give Claude a quick task, let it finish, and **step away** without typing. When the
+   prompt goes idle you'll get a notification titled with the session's identity.
+4. Inspect what Cue recorded: `cat ~/.cue/state/*.json`.
+
+### Local / development install
 
 ```bash
-claude --plugin-dir ./cue
+claude --plugin-dir /path/to/cue        # load straight from a checkout
 ```
 
-or add the local marketplace from inside Claude Code:
+or add the checkout as a local marketplace from inside Claude Code:
 
 ```text
-/plugin marketplace add ./cue
+/plugin marketplace add /path/to/cue
 /plugin install cue@cue-marketplace
 ```
 
-**Requirements:** Node.js (already present for Claude Code). Zero runtime dependencies.
+### A note on PATH
+
+Hooks run in a **non-interactive shell**, whose `PATH` is often narrower than your
+terminal's — it may not include nvm or Homebrew directories. Two consequences:
+
+- If `node` lives only in an nvm/Homebrew path, the hook can't launch and Cue silently
+  does nothing. Fix: make `node` available on the base PATH (e.g. symlink it into
+  `/usr/local/bin`, or use a system/Volta install), then `node --version` from a plain
+  `sh -c 'node --version'` should succeed.
+- Cue locates `terminal-notifier` by checking `/opt/homebrew/bin` and `/usr/local/bin`
+  directly (not just PATH), so a Homebrew install is found even when PATH wouldn't.
 
 ## Identity
 
@@ -156,9 +205,13 @@ be built without changing the on-disk format.
 
 ## Troubleshooting
 
-- **No notification?** Confirm the session is in an unattended mode (`bypassPermissions`,
-  `auto`, or `dontAsk`) — or whatever you've set in `autoModes`. A `Stop` must have
-  happened at least once so the mode was stashed.
+- **Installed but nothing ever fires?** Most often `node` isn't on the hook's
+  (non-interactive) PATH — see [A note on PATH](#a-note-on-path). Check with
+  `sh -c 'node --version'`. Also run `/hooks` and confirm Cue's entries are listed; if not,
+  run `/reload-plugins` or confirm the plugin is enabled (`/plugin`).
+- **No notification for a specific session?** Confirm it's in an unattended mode
+  (`bypassPermissions`, `auto`, or `dontAsk`) — or whatever you set in `autoModes`. A
+  `Stop` must have happened at least once so the mode was stashed.
 - **Inspect hook activity:** press **Ctrl+O** for verbose output, or launch with
   `claude --debug-file /tmp/claude.log` and check the log.
 - **Inspect Cue's state:** look at `~/.cue/state/<session_id>.json` — it records
