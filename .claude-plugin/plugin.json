@@ -1,0 +1,12 @@
+{
+  "name": "cue",
+  "version": "0.1.0",
+  "description": "Desktop notification when an auto-mode Claude Code session goes idle waiting for you — built for many parallel sessions.",
+  "author": {
+    "name": "wikispecadmin-ai",
+    "url": "https://github.com/wikispecadmin-ai"
+  },
+  "repository": "https://github.com/wikispecadmin-ai/cue",
+  "license": "MIT",
+  "keywords": ["notifications", "idle", "auto-mode", "productivity", "hooks"]
+}

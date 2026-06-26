@@ -1,0 +1,14 @@
+{
+  "name": "cue-marketplace",
+  "owner": {
+    "name": "wikispecadmin-ai"
+  },
+  "description": "Self-hosted marketplace for the Cue idle-notifier plugin.",
+  "plugins": [
+    {
+      "name": "cue",
+      "source": "./",
+      "description": "Desktop notification when an auto-mode Claude Code session goes idle waiting for you — built for many parallel sessions."
+    }
+  ]
+}
