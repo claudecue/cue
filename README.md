@@ -1,6 +1,17 @@
-# Cue
+<h1 align="center">Cue</h1>
 
-**A desktop ping when an auto-mode Claude Code session goes idle waiting for you — built for many parallel sessions.**
+<p align="center">
+  <strong>A desktop ping when an unattended Claude Code session goes idle waiting for you — built for many parallel sessions.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/claudecue/cue/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/claudecue/cue/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+  <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-d97757">
+  <img alt="Node ≥18" src="https://img.shields.io/badge/node-%E2%89%A518-339933?logo=node.js&logoColor=white">
+  <img alt="Dependencies: 0" src="https://img.shields.io/badge/dependencies-0-brightgreen">
+  <img alt="Platforms" src="https://img.shields.io/badge/macOS%20%C2%B7%20Linux%20%C2%B7%20Windows-supported-blue">
+</p>
 
 In an unattended permission mode (`bypassPermissions`, `auto`, or `dontAsk`) there are
 no permission prompts to pull you back, so the only "your turn" moment is when a session
@@ -46,7 +57,7 @@ a future "control tower" dashboard can read it unchanged. If `XDG_STATE_HOME` is
 state and config move under `$XDG_STATE_HOME/cue` instead (e.g. `~/.local/state/cue`) —
 that's also where you'll find `config.json`.
 
-## Install
+## Getting started
 
 ### 1. Prerequisites
 
@@ -67,7 +78,7 @@ Zero npm dependencies — nothing to `npm install`.
 Inside Claude Code:
 
 ```text
-/plugin marketplace add wikispecadmin-ai/cue
+/plugin marketplace add claudecue/cue
 /plugin install cue@cue-marketplace
 /reload-plugins
 ```
@@ -77,11 +88,11 @@ That's it — the hooks ship inside the plugin and **activate automatically** (n
 restart is needed (`/reload-plugins` applies it live). Disable/re-enable later with
 `/plugin disable cue@cue-marketplace` / `/plugin enable cue@cue-marketplace`.
 
-> Replace `wikispecadmin-ai/cue` with wherever the repo is hosted. The marketplace uses a
+> Replace `claudecue/cue` with wherever the repo is hosted. The marketplace uses a
 > relative `source: "./"`, which only resolves when added **via the git repo**
 > (GitHub/GitLab/git URL) — **not** via a direct URL to a raw `marketplace.json`.
 
-CLI equivalent (outside a session): `claude plugin marketplace add wikispecadmin-ai/cue`
+CLI equivalent (outside a session): `claude plugin marketplace add claudecue/cue`
 then `claude plugin install cue@cue-marketplace`.
 
 ### 3. Grant the OS notification permission (first run)

@@ -1,7 +1,7 @@
 {
   "name": "cue-marketplace",
   "owner": {
-    "name": "wikispecadmin-ai"
+    "name": "claudecue"
   },
   "description": "Self-hosted marketplace for the Cue idle-notifier plugin.",
   "plugins": [
