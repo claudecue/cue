@@ -4,7 +4,6 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
 
 import { claimSound, inQuietHours } from '../lib/throttle.mjs';
 import { isAutoMode } from '../lib/mode.mjs';
@@ -107,10 +106,11 @@ test('every documented permission_mode value resolves to a boolean (no crash on 
 // exactly one must win the sound. Spawns real processes against a shared dir.
 test('claimSound: only one of many concurrent processes plays the sound', async () => {
   const { dir, cleanup } = tmp();
-  const throttlePath = fileURLToPath(new URL('../lib/throttle.mjs', import.meta.url));
+  // Pass a file:// URL (not a raw fs path) so dynamic import() works on Windows too.
+  const throttleUrl = new URL('../lib/throttle.mjs', import.meta.url).href;
   const N = 12;
   const code =
-    `import(${JSON.stringify(throttlePath)}).then((m) => {` +
+    `import(${JSON.stringify(throttleUrl)}).then((m) => {` +
     `const r = m.claimSound({ dir: process.env.CUE_TEST_DIR, nowMs: Date.now(), throttleSeconds: 5 });` +
     `process.stdout.write(r ? 'PLAY' : 'SILENT'); });`;
 
