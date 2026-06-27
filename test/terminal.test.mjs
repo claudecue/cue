@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { terminalHints } from '../lib/terminal.mjs';
+import { terminalHints, bundleIdFor } from '../lib/terminal.mjs';
 
 // These hints are recorded in session state for a FUTURE focus/control-tower
 // feature. v1 never acts on them — so the contract is just "describe the
@@ -45,4 +45,17 @@ test('returns a plain object (safe to JSON-serialize into state)', () => {
   const h = terminalHints({ TERM_PROGRAM: 'Apple_Terminal' });
   assert.equal(typeof h, 'object');
   assert.doesNotThrow(() => JSON.stringify(h));
+});
+
+test('bundleIdFor: maps known TERM_PROGRAM values to app bundle ids', () => {
+  assert.equal(bundleIdFor('vscode'), 'com.microsoft.VSCode');
+  assert.equal(bundleIdFor('iTerm.app'), 'com.googlecode.iterm2');
+  assert.equal(bundleIdFor('Apple_Terminal'), 'com.apple.Terminal');
+  assert.equal(bundleIdFor('WezTerm'), 'com.github.wez.wezterm');
+});
+
+test('bundleIdFor: unknown or missing program returns null (no misfire)', () => {
+  assert.equal(bundleIdFor('SomeUnknownTerm'), null);
+  assert.equal(bundleIdFor(undefined), null);
+  assert.equal(bundleIdFor(''), null);
 });

@@ -15,7 +15,7 @@ import { isAutoMode } from '../lib/mode.mjs';
 import { resolveIdentity } from '../lib/identity.mjs';
 import { claimSound, inQuietHours } from '../lib/throttle.mjs';
 import { send } from '../lib/notify.mjs';
-import { terminalHints } from '../lib/terminal.mjs';
+import { terminalHints, bundleIdFor } from '../lib/terminal.mjs';
 
 // Read the hook payload from stdin (fd 0). Payloads are small JSON objects.
 function readStdin() {
@@ -101,6 +101,9 @@ function handleIdle(payload, dir) {
     sound = claimSound({ dir, nowMs: now, throttleSeconds: config.throttleSeconds });
   }
 
+  // Click target: bring this session's terminal/editor app forward (best-effort).
+  const activate = config.clickToFocus ? bundleIdFor(prior?.terminal?.termProgram) : null;
+
   send({
     platform: process.platform,
     title: identity,
@@ -108,6 +111,7 @@ function handleIdle(payload, dir) {
     subtitle,
     sessionId,
     sound,
+    activate,
   });
 
   writeState(
