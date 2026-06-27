@@ -30,6 +30,32 @@ test('macOS: prefers terminal-notifier with group/title/subtitle/sound', () => {
   assert.ok(args.includes('-sound'));
 });
 
+test('macOS: terminal-notifier adds -activate when a click target is given', () => {
+  const { args } = buildCommand({
+    platform: 'darwin',
+    hasTerminalNotifier: true,
+    ...base,
+    activate: 'com.microsoft.VSCode',
+  });
+  assert.equal(args[args.indexOf('-activate') + 1], 'com.microsoft.VSCode');
+});
+
+test('macOS: no -activate when no click target', () => {
+  const { args } = buildCommand({ platform: 'darwin', hasTerminalNotifier: true, ...base });
+  assert.ok(!args.includes('-activate'));
+});
+
+test('macOS osascript fallback ignores activate (no click support, no crash)', () => {
+  const { cmd, args } = buildCommand({
+    platform: 'darwin',
+    hasTerminalNotifier: false,
+    ...base,
+    activate: 'com.microsoft.VSCode',
+  });
+  assert.equal(cmd, 'osascript');
+  assert.ok(!args.join(' ').includes('-activate'));
+});
+
 test('macOS: terminal-notifier omits -sound when silent', () => {
   const { args } = buildCommand({
     platform: 'darwin',

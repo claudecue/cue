@@ -95,6 +95,7 @@ optional; defaults shown:
   "throttleSeconds": 5,
   "sound": true,
   "showRepoBranch": true,
+  "clickToFocus": true,
   "quietHours": null,
   "tabTitleMarker": false
 }
@@ -106,10 +107,18 @@ optional; defaults shown:
 | `throttleSeconds` | `5` | If a Cue notification played a sound within this window, the next one is silent (still shows). |
 | `sound` | `true` | Master switch for sound. |
 | `showRepoBranch` | `true` | Append a `repo:branch` subtitle. Omitted silently if `git` fails. |
+| `clickToFocus` | `true` | Clicking a notification brings that session's terminal/editor app to the front (macOS + `terminal-notifier` only; no-op if the app can't be identified). It brings the *app* forward, not the exact tab. |
 | `quietHours` | `null` | e.g. `{ "start": "22:00", "end": "08:00" }` — suppress sound during this window (still notifies). Handles overnight wrap. |
 | `tabTitleMarker` | `false` | Reserved; off by default. |
 
 `CUE_NAME` (env var) overrides the title per session.
+
+### Make notifications stay on screen (macOS)
+
+macOS shows notifications as **banners**, which auto-dismiss. To make Cue's notifications
+persist until you act on them, set the delivering app to **Alerts**: System Settings →
+Notifications → **terminal-notifier** → notification style **Alerts**. (This is a macOS
+per-app setting, not something the plugin can set for you.)
 
 ## Contributing
 

@@ -1,6 +1,6 @@
 {
   "name": "cue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Desktop notification when an auto-mode Claude Code session goes idle waiting for you — built for many parallel sessions.",
   "author": {
     "name": "claudecue",
